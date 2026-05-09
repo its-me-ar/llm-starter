@@ -213,7 +213,7 @@ export const ask = async (
       question,
       topN,
       session_id,
-    } = req.query;
+    } = req.query as { question: string; topN?: string; session_id: string };
 
     const SIMILARITY_THRESHOLD = 0.5;
 
@@ -498,4 +498,37 @@ export const conversation = async (req: Request, res: Response) => {
       .status(status)
       .json({ message: error.message || "Internal server error" });
   }
-};  
+};
+
+export const getSessions = async (req: Request, res: Response) => {
+  try {
+    const { data, error } = await aiRepository.getSessions();
+    if (error) throw error;
+
+    return res.status(StatusCodes.OK).json({
+      message: "Sessions retrieved successfully",
+      sessions: data,
+    });
+  } catch (error: any) {
+    console.error(error);
+    const status = error.status || StatusCodes.INTERNAL_SERVER_ERROR;
+    res.status(status).json({ message: error.message || "Internal server error" });
+  }
+};
+
+export const getSessionMessages = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params as { id: string };
+    const { data, error } = await aiRepository.getSessionMessages(id);
+    if (error) throw error;
+
+    return res.status(StatusCodes.OK).json({
+      message: "Messages retrieved successfully",
+      messages: data,
+    });
+  } catch (error: any) {
+    console.error(error);
+    const status = error.status || StatusCodes.INTERNAL_SERVER_ERROR;
+    res.status(status).json({ message: error.message || "Internal server error" });
+  }
+};

@@ -1,81 +1,65 @@
-# AI Chatbot Backend - Week 1
+# ChatX - AI Chatbot with PDF RAG (Week 2)
 
-A robust Node.js + Express backend service integrated with Google's GenAI SDK (Gemini) to provide an AI-powered chat endpoint.
+A premium AI-powered chatbot application featuring real-time streaming chat and a PDF-based Retrieval-Augmented Generation (RAG) system.
 
-## 🚀 Features (Week 1 — LLM Basics)
+## 🚀 Features
 
-- **RESTful API**: Exposes a `POST /api/chat` endpoint.
-- **LLM Integration**: Powered by `gemini-2.5-flash` via the `@google/genai` SDK.
-- **System Prompt**: Configured with a default persona ("You are a helpful coding assistant").
-- **Dynamic Control**: Supports custom `temperature` (0.0–1.0) and `max_tokens` (capped at 500).
-- **Input Validation**: Uses **Zod** for strict request body validation (400 Bad Request on missing message).
-- **Security**: Environment variables managed via `.env` (API keys are never hardcoded).
-- **Comprehensive Response**: Returns generated reply along with usage metadata (token counts) and finish reasons.
+### **AI Chat & Streaming**
+- **Real-time Streaming**: Integrated SSE (Server-Sent Events) for ChatGPT-like token-by-token responses.
+- **Advanced GenAI**: Powered by Google's Gemini Flash models via the unified SDK.
+- **Session Management**: Automated conversation tracking with session persistence in Supabase.
+
+### **PDF RAG (Retrieval-Augmented Generation)**
+- **Document Processing**: Custom PDF parsing and chunking logic.
+- **Vector Embeddings**: Generates high-dimensional embeddings for document chunks.
+- **Supabase Vector Store**: Stores chunks and embeddings in Supabase with pgvector for semantic search.
+- **Context-Aware Responses**: AI answers questions specifically about uploaded documents with source citations.
+
+### **Premium UI/UX**
+- **Clean Interface**: Minimalist, modern design focused on interaction.
+- **Chat History Sidebar**: Persistent sidebar to access and load past conversations.
+- **File Management**: "Document Mode" with file pills and upload progress indicators.
+- **Source Transparency**: Direct citations of document parts used in AI answers.
 
 ## 🛠 Tech Stack
 
-- **Runtime**: Node.js
-- **Language**: TypeScript
-- **Framework**: Express.js
-- **LLM SDK**: `@google/genai` (Google Unified GenAI SDK)
-- **Validation**: Zod
-- **Build Tool**: Turbo + TSC
+- **Backend**: Node.js, Express, TypeScript, Supabase (PostgreSQL + pgvector).
+- **Frontend**: React, Vite, TypeScript, Vanilla CSS.
+- **AI/LLM**: Google Generative AI (Gemini), Gemini Embeddings.
+- **Validation & Tools**: Zod, Multer, PDF-Parse, Turbo.
 
 ## ⚙️ Environment Variables
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the `backend` directory:
 
 ```env
 PORT=3000
-GEMINI_API_KEY=your_api_key_here
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_API_KEY=your_gemini_key
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-## 🚥 API Documentation
+## 🚥 API Documentation (v2)
 
-### **Start Chat**
-`POST /api/chat`
-
-**Request Body:**
-```json
-{
-  "message": "Write a function to find the max value in an array.",
-  "temperature": 0.7
-}
-```
-
-**Response Body:**
-```json
-{
-  "data": {
-    "reply": "You can use Math.max() with the spread operator...",
-    "model": "gemini-3.0-flash",
-    "usage": {
-      "input_tokens": 12,
-      "output_tokens": 45,
-      "tokens_used": 57
-    },
-    "finish_reason": "STOP",
-    "temperature": 0.7
-  }
-}
-```
+### **AI Operations**
+- `POST /api/v2/ai/conversation`: Initialize a new chat session.
+- `POST /api/v2/ai/upload`: Upload and index a PDF document.
+- `GET /api/v2/ai/ask`: Ask a question about the uploaded document (RAG).
+- `GET /api/v2/ai/sessions`: List all previous chat sessions.
+- `GET /api/v2/ai/sessions/:id/messages`: Retrieve message history for a specific session.
 
 ## 📦 Getting Started
 
-1.  **Install dependencies**:
-    ```bash
-    npm install
-    ```
-2.  **Run in development mode** (hot-reloading):
-    ```bash
-    npm run dev
-    ```
-3.  **Build and Start**:
-    ```bash
-    npm run build
-    npm start
-    ```
+1. **Install Root Dependencies**:
+   ```bash
+   npm install
+   ```
 
-## ✅ Status: Week 1 Completed
-All assignment requirements for Week 1 have been implemented and tested, including API integration, prompt structuring, and error handling.
+2. **Run Application**:
+   ```bash
+   # Run both backend and frontend in dev mode
+   npm run dev
+   ```
+
+## ✅ Project Status: Assignment Completed
+All requirements for the AI Chatbot and PDF RAG assignment have been implemented, including repository pattern refactoring, v2 API namespace, and a full-featured React UI.

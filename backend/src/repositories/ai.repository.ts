@@ -48,5 +48,20 @@ export const aiRepository = {
       query_embedding: queryEmbedding,
       match_count: matchCount,
     });
+  },
+
+  async getSessions() {
+    return supabase
+      .from("conversations")
+      .select("*")
+      .order("created_at", { ascending: false });
+  },
+
+  async getSessionMessages(session_id: string) {
+    return supabase
+      .from("messages")
+      .select("*")
+      .eq("session_id", session_id)
+      .order("created_at", { ascending: true });
   }
 };
