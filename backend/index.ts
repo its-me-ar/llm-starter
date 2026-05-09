@@ -9,7 +9,8 @@ const env = process.env.NODE_ENV === "development" ? "dev" : "combined";
 
 const PORT = process.env.PORT || 3000;
 app.use(morgan(env));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use("/api", router);
 
 app.listen(PORT, () => {
