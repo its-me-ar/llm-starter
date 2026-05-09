@@ -10,7 +10,7 @@ import {
   generateChunkEmbeddings,
 } from "./utils";
 import { PDFParse } from "pdf-parse";
-import { supabase, supabaseDB } from "../../services/supabase";
+import { aiRepository } from "../../repositories/ai.repository";
 
 interface Item {
   id: number;
@@ -171,7 +171,7 @@ export const uploadPDF = async (req: Request, res: Response) => {
     // Insert all chunks concurrently
     const results = await Promise.all(
       embeddedChunks.map((chunk) => {
-        return supabaseDB.insertChunk({
+        return aiRepository.insertChunk({
           source_file: req.file!.originalname,
           chunk_index: chunk.chunk_index,
           content: chunk.text,
@@ -238,7 +238,7 @@ export const ask = async (
     }
 
     const sessionResp =
-      await supabaseDB.validateSession(
+      await aiRepository.validateSession(
         session_id as string
       );
 
@@ -262,7 +262,7 @@ export const ask = async (
 
     // Load conversation history FIRST
     const historyResp =
-      await supabaseDB.getRecentMessages(
+      await aiRepository.getRecentMessages(
         session_id as string
       );
 
@@ -297,7 +297,7 @@ export const ask = async (
     }
 
     // Save user message
-    await supabaseDB.saveMessage({
+    await aiRepository.saveMessage({
       session_id:
         session_id as string,
 
@@ -308,15 +308,9 @@ export const ask = async (
 
     // Retrieve chunks
     const { data, error } =
-      await supabase.rpc(
-        "match_documents",
-        {
-          query_embedding:
-            queryEmbedding,
-
-          match_count:
-            matchCount,
-        }
+      await aiRepository.matchDocuments(
+        queryEmbedding,
+        matchCount
       );
 
     if (error) {
@@ -416,7 +410,7 @@ ${queryText}
       "I don't know.";
 
     // Save assistant response
-    await supabaseDB.saveMessage({
+    await aiRepository.saveMessage({
       session_id:
         session_id as string,
 
@@ -485,7 +479,7 @@ ${queryText}
 export const conversation = async (req: Request, res: Response) => {
   try {
 
-    const resp = await supabaseDB.createSession();
+    const resp = await aiRepository.createSession();
     if (resp.success) {
       return res.status(StatusCodes.OK).json({
         message: "Conversation created successfully",
